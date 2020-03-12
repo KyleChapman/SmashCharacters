@@ -87,9 +87,6 @@ Public Class frmSmashCharacters
     ''' </summary>
     Private Sub lvwCharacters_ItemCheck(sender As Object, e As ItemCheckEventArgs) Handles lvwCharacters.ItemCheck
 
-        ' Need to complete this.
-        ' There's a way to do it in the CustomerList / ClientList example but I want to find something nicer.
-
         ' If we're not currently adding characters to the list
         If Not isAddingToListView Then
 
