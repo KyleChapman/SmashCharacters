@@ -8,11 +8,18 @@ Option Strict On
 
 Public Class Character
 
+#Region "Variable Declarations"
+
     Private Shared characterCount As Integer
     Private characterIdentificationNumber As String = String.Empty
     Private characterName As String = String.Empty      ' private variable to hold the character's name
     Private characterSeries As String = String.Empty    ' private variable to hold the character's series
+    Private characterYear As Integer = 0    ' private variable to hold the character's year
     Private characterEchoFighter As Boolean = False     ' private variable to hold whether the character is an echo fighter
+
+#End Region
+
+#Region "Constructors"
 
     ''' <summary>
     ''' Constructor - Default - creates a new character object
@@ -29,16 +36,22 @@ Public Class Character
     ''' </summary>
     ''' <param name="nameValue"></param>
     ''' <param name="seriesValue"></param>
-    ''' <param name="echoValue"></param>
-    Public Sub New(nameValue As String, seriesValue As String, echoValue As Boolean)
+    ''' <param name="yearValue"></param>
+    ''' <param name="echoValue">True if the character is an echo fighter, False otherwise</param>
+    Public Sub New(nameValue As String, seriesValue As String, yearValue As Integer, echoValue As Boolean)
 
         Me.New()
 
         characterName = nameValue
         characterSeries = seriesValue
+        characterYear = yearValue
         characterEchoFighter = echoValue
 
     End Sub
+
+#End Region
+
+#Region "Property Procedures"
 
     ''' <summary>
     ''' Count ReadOnly Property - Gets the number of characters that have been instantiated/created
@@ -100,13 +113,50 @@ Public Class Character
     End Property
 
     ''' <summary>
-    ''' GetSalutation is a function that a salutation based on the private properties within the class scope
+    ''' Year property - Gets and Sets the year that a character was created
+    ''' </summary>
+    ''' <returns>Integer</returns>
+    Public Property Year() As Integer
+        Get
+            Return characterYear
+        End Get
+        Set(ByVal value As Integer)
+            characterYear = value
+        End Set
+    End Property
+
+#End Region
+
+#Region "Methods"
+
+    ''' <summary>
+    ''' GetSalutation is a function that returns a salutation based on the private properties within the class scope
     ''' </summary>
     ''' <returns>String</returns>
     Public Function GetSalutation() As String
 
-        Return "Hi! My name is " & characterName & " from " & characterSeries & " and " & IIf(characterEchoFighter = True, "I am an echo fighter", "I am not an echo fighter").ToString()
+        Return "Hi! My name is " & characterName & " from " & characterSeries & " created in " & characterYear.ToString() & ", and " & IIf(characterEchoFighter = True, "I am an echo fighter", "I am not an echo fighter").ToString()
+
+        'If characterEchoFighter Then
+        '    Return "Hi! My name is " & characterName & " from " & characterSeries & " and I am an echo fighter"
+        'Else
+        '    Return "Hi! My name is " & characterName & " from " & characterSeries & " and I am not an echo fighter"
+        'End If
 
     End Function
+
+
+    ''' <summary>
+    ''' WriteCharacter is a function that writes the character to a file concisely based on the private properties within the class scope
+    ''' </summary>
+    ''' <returns>String</returns>
+    Public Function WriteCharacter() As String
+
+        Return characterName & vbTab & characterSeries & vbTab & characterYear.ToString() & IIf(characterEchoFighter = True, vbTab & "Echo fighter", String.Empty).ToString() & vbCrLf
+
+    End Function
+
+
+#End Region
 
 End Class

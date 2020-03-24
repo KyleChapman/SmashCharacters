@@ -6,6 +6,10 @@
 '   Some functionality is loosely adapted from CustomerList by Alfred/Paul Massardo
 '   (pmassardo: https://github.com/pmassardo/CustomerList)
 
+Option Strict On
+
+Imports System.IO
+
 Public Class frmSmashCharacters
 
 #Region "Variable Declarations"
@@ -14,6 +18,8 @@ Public Class frmSmashCharacters
     Dim isCharacterSelected As Boolean = False
     Dim isAddingToListView As Boolean = False
     Dim characterList As New List(Of Character)
+
+    Const DefaultYear As Integer = 1980
 
 #End Region
 
@@ -25,12 +31,12 @@ Public Class frmSmashCharacters
     Private Sub btnEnter_Click(sender As Object, e As EventArgs) Handles btnEnter.Click
 
         ' Validate the data in the form
-        If IsValidInput() = True Then
+        If IsValidInput() Then
             ' If a character is selected
             If Not isCharacterSelected Then
 
                 ' Create a new character and add them to the list
-                selectedCharacter = New Character(tbName.Text, tbSeries.Text, chkEchoFighter.Checked)
+                selectedCharacter = New Character(tbName.Text, tbSeries.Text, CInt(nudYear.Value), chkEchoFighter.Checked)
                 characterList.Add(selectedCharacter)
 
                 ' Else if currentCharacter exists, we will be editing it
@@ -39,6 +45,7 @@ Public Class frmSmashCharacters
                 ' Update the existing character based on the entered values
                 selectedCharacter.Name = tbName.Text
                 selectedCharacter.Series = tbSeries.Text
+                selectedCharacter.Year = Convert.ToInt32(nudYear.Value)
                 selectedCharacter.IsEcho = chkEchoFighter.Checked
 
             End If
@@ -46,6 +53,29 @@ Public Class frmSmashCharacters
         End If
 
         SetDefaults()
+
+    End Sub
+
+    ''' <summary>
+    ''' This button will attempt to save a file containing the list
+    ''' </summary>
+    ''' <param name="sender"></param>
+    ''' <param name="e"></param>
+    Private Sub btnSave_Click(sender As Object, e As EventArgs) Handles btnSave.Click
+
+        Dim filePath As String = "Characters" & Date.Now.ToString("yyyyMMdd") & ".txt"
+        Dim fileToAccess As New FileStream(filePath, FileMode.Create, FileAccess.Write)
+        Dim writer As New StreamWriter(fileToAccess)
+
+        ' This For loop counts through the characters in the list
+        For index As Integer = 0 To characterList.Count - 1
+
+            ' Write that character to the file
+            writer.Write(characterList(index).WriteCharacter)
+
+        Next
+
+        writer.Close()
 
     End Sub
 
@@ -74,6 +104,7 @@ Public Class frmSmashCharacters
 
             tbName.Text = selectedCharacter.Name
             tbSeries.Text = selectedCharacter.Series
+            nudYear.Value = selectedCharacter.Year
             chkEchoFighter.Checked = selectedCharacter.IsEcho
 
         Else
@@ -108,6 +139,7 @@ Public Class frmSmashCharacters
     Private Sub SetDefaults()
         tbName.Clear()
         tbSeries.Clear()
+        nudYear.Value = DefaultYear
         chkEchoFighter.Checked = False
         lbResult.Text = String.Empty
 
@@ -185,6 +217,7 @@ Public Class frmSmashCharacters
             characterItem.SubItems.Add(characterList(index).IdentificationNumber.ToString())
             characterItem.SubItems.Add(characterList(index).Name)
             characterItem.SubItems.Add(characterList(index).Series)
+            characterItem.SubItems.Add(characterList(index).Year.ToString)
             characterItem.Checked = characterList(index).IsEcho
 
             ' Indicate that we are adding characters to the ListView
